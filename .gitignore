@@ -27,8 +27,10 @@ target/*
 templates/terraform.tfstate
 templates/terraform.tfstate.backup
 templates/.terraform.tfstate.lock.info
+templates/.terraform.lock.hcl
 samples/*
 .code/*
 .idea/*
 ecsFargateService.iml
 *DS_Store*
+.infracost/*

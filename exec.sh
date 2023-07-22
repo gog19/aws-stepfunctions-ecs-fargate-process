@@ -1,12 +1,13 @@
-ACCOUNT_NUMBER=<YOUR_ACCOUNT_NUMBER>
-REGION=<REGION>
+# ACCOUNT_NUMBER=<YOUR_ACCOUNT_NUMBER>
+# REGION=<REGION>
+
 INPUT_S3_BUCKET="my-stepfunction-ecs-app-dev-source-bucket"
 
 APP_ECR_REPO_NAME=my-stepfunction-ecs-app-repo
 APP_ECR_REPO_URL=$ACCOUNT_NUMBER.dkr.ecr.$REGION.amazonaws.com/$APP_ECR_REPO_NAME
 
 # Build the sprintboot Jar
-mvn clean package
+mvn clean package -DskipTests
 
 # Terraform infrastructure apply
 cd templates
@@ -15,14 +16,14 @@ terraform apply --auto-approve
 
 cd ..
 
-docker build -t example/ecsfargateservice . 
+docker build --platform linux/amd64 -t example/ecsfargateservice . 
+
 docker tag example/ecsfargateservice ${APP_ECR_REPO_URL}:latest
 
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_NUMBER.dkr.ecr.$REGION.amazonaws.com
 docker push ${APP_ECR_REPO_URL}:latest
 
-#aws ecr list-images --repository-name ${APP_ECR_REPO_URL}
-
+#aws ecr list-images --repository-name ${APP_ECR_REPO_NAME} --region ${REGION}
 
 #######
 ### PUT SAMPLE S3 For the Input S3 bucket
